@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="Snake Evolution - A modern twist on the classic snake game with evolution mechanics">
+    <meta name="theme-color" content="#0a0f1a">
+    <title>Snake Evolution</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Background canvas for effects -->
+        <canvas id="bg-canvas" class="game-canvas"></canvas>
+        
+        <!-- Main game canvas -->
+        <canvas id="game-canvas" class="game-canvas"></canvas>
+        
+        <!-- UI Overlay -->
+        <div id="ui-overlay">
+            <!-- Start Screen -->
+            <div id="start-screen" class="screen active">
+                <div class="screen-content">
+                    <div class="logo">
+                        <svg class="logo-snake" viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 15 Q25 5 45 15 Q65 25 85 15" stroke="var(--accent-primary)" stroke-width="3" fill="none" stroke-linecap="round">
+                                <animate attributeName="stroke-dashoffset" from="100" to="0" dur="2s" repeatCount="indefinite"/>
+                            </path>
+                            <circle cx="85" cy="15" r="4" fill="var(--accent-primary)">
+                                <animate attributeName="r" values="4;6;4" dur="1s" repeatCount="indefinite"/>
+                            </circle>
+                        </svg>
+                    </div>
+                    <h1 class="game-title">
+                        <span class="title-part">SNAKE</span>
+                        <span class="title-part evolution">EVOLUTION</span>
+                    </h1>
+                    <p class="tagline">Eat. Grow. Evolve.</p>
+                    
+                    <div class="menu-buttons">
+                        <button id="btn-start" class="btn btn-primary">
+                            <span class="btn-text">Start Game</span>
+                            <span class="btn-icon">▶</span>
+                        </button>
+                        <button id="btn-controls" class="btn btn-secondary">
+                            <span class="btn-text">Controls</span>
+                            <span class="btn-icon">⚙</span>
+                        </button>
+                        <button id="btn-stats" class="btn btn-secondary">
+                            <span class="btn-text">Stats</span>
+                            <span class="btn-icon">📊</span>
+                        </button>
+                    </div>
+                    
+                    <div class="high-score-display">
+                        <span class="label">Best Score</span>
+                        <span id="high-score" class="value">0</span>
+                    </div>
+                    
+                    <div class="version-info">v1.0.0</div>
+                </div>
+            </div>
+            
+            <!-- Controls Screen -->
+            <div id="controls-screen" class="screen">
+                <div class="screen-content">
+                    <h2>Controls</h2>
+                    <div class="controls-grid">
+                        <div class="control-item">
+                            <kbd class="key">↑</kbd><kbd class="key">W</kbd>
+                            <span>Move Up</span>
+                        </div>
+                        <div class="control-item">
+                            <kbd class="key">↓</kbd><kbd class="key">S</kbd>
+                            <span>Move Down</span>
+                        </div>
+                        <div class="control-item">
+                            <kbd class="key">←</kbd><kbd class="key">A</kbd>
+                            <span>Move Left</span>
+                        </div>
+                        <div class="control-item">
+                            <kbd class="key">→</kbd><kbd class="key">D</kbd>
+                            <span>Move Right</span>
+                        </div>
+                        <div class="control-item">
+                            <kbd class="key">Space</kbd>
+                            <span>Boost / Dash</span>
+                        </div>
+                        <div class="control-item">
+                            <kbd class="key">P</kbd>
+                            <span>Pause</span>
+                        </div>
+                        <div class="control-item mobile-only">
+                            <span class="touch-indicator">👆</span>
+                            <span>Swipe to Move</span>
+                        </div>
+                        <div class="control-item mobile-only">
+                            <span class="touch-indicator">👆👆</span>
+                            <span>Double Tap to Boost</span>
+                        </div>
+                    </div>
+                    <button id="btn-back-from-controls" class="btn btn-secondary">Back</button>
+                </div>
+            </div>
+            
+            <!-- Stats Screen -->
+            <div id="stats-screen" class="screen">
+                <div class="screen-content">
+                    <h2>Statistics</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span id="stat-games" class="stat-value">0</span>
+                            <span class="stat-label">Games Played</span>
+                        </div>
+                        <div class="stat-card">
+                            <span id="stat-total-score" class="stat-value">0</span>
+                            <span class="stat-label">Total Score</span>
+                        </div>
+                        <div class="stat-card">
+                            <span id="stat-best-length" class="stat-value">0</span>
+                            <span class="stat-label">Best Length</span>
+                        </div>
+                        <div class="stat-card">
+                            <span id="stat-evolutions" class="stat-value">0</span>
+                            <span class="stat-label">Evolutions</span>
+                        </div>
+                        <div class="stat-card">
+                            <span id="stat-food-eaten" class="stat-value">0</span>
+                            <span class="stat-label">Food Eaten</span>
+                        </div>
+                        <div class="stat-card">
+                            <span id="stat-playtime" class="stat-value">0s</span>
+                            <span class="stat-label">Play Time</span>
+                        </div>
+                    </div>
+                    <button id="btn-back-from-stats" class="btn btn-secondary">Back</button>
+                </div>
+            </div>
+            
+            <!-- Pause Overlay -->
+            <div id="pause-overlay" class="overlay hidden">
+                <div class="overlay-content">
+                    <h2>Paused</h2>
+                    <div class="pause-info">
+                        <span>Score: <span id="pause-score">0</span></span>
+                        <span>Length: <span id="pause-length">3</span></span>
+                        <span>Evolution: <span id="pause-evolution">1</span></span>
+                    </div>
+                    <div class="overlay-buttons">
+                        <button id="btn-resume" class="btn btn-primary">Resume</button>
+                        <button id="btn-restart-pause" class="btn btn-secondary">Restart</button>
+                        <button id="btn-quit-pause" class="btn btn-secondary">Quit</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Game Over Overlay -->
+            <div id="game-over-overlay" class="overlay hidden">
+                <div class="overlay-content">
+                    <h2 class="game-over-title">Game Over</h2>
+                    <div class="final-stats">
+                        <div class="final-stat">
+                            <span id="final-score" class="final-value">0</span>
+                            <span class="final-label">Score</span>
+                        </div>
+                        <div class="final-stat">
+                            <span id="final-length" class="final-value">3</span>
+                            <span class="final-label">Length</span>
+                        </div>
+                        <div class="final-stat">
+                            <span id="final-evolution" class="final-value">1</span>
+                            <span class="final-label">Evolution</span>
+                        </div>
+                        <div class="final-stat">
+                            <span id="final-time" class="final-value">0s</span>
+                            <span class="final-label">Time</span>
+                        </div>
+                    </div>
+                    <div id="new-record" class="new-record hidden">🎉 NEW RECORD! 🎉</div>
+                    <div class="overlay-buttons">
+                        <button id="btn-restart" class="btn btn-primary">Play Again</button>
+                        <button id="btn-menu" class="btn btn-secondary">Main Menu</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- HUD (Heads Up Display) - Redesigned -->
+            <div id="hud" class="hud hidden">
+                <div class="hud-section hud-section--left">
+                    <div class="hud-group">
+                        <div class="hud-item hud-item--primary">
+                            <span class="hud-label">SCORE</span>
+                            <span id="hud-score" class="hud-value">0</span>
+                        </div>
+                        <div class="hud-item">
+                            <span class="hud-label">LENGTH</span>
+                            <span id="hud-length" class="hud-value">3</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hud-section hud-section--center">
+                    <div class="evolution-meter">
+                        <div class="evolution-bar-track">
+                            <div id="evolution-bar" class="evolution-bar"></div>
+                        </div>
+                        <div class="evolution-labels">
+                            <span id="evolution-current" class="evolution-label">EVOLUTION 1</span>
+                            <span id="evolution-next" class="evolution-label evolution-label--next hidden">SERPENT</span>
+                        </div>
+                        <div class="evolution-threshold">
+                            <span id="evolution-progress-text" class="evolution-progress-text">0 / 10</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hud-section hud-section--right">
+                    <div class="hud-group">
+                        <div class="hud-item">
+                            <span class="hud-label">BEST</span>
+                            <span id="hud-highscore" class="hud-value">0</span>
+                        </div>
+                        <div class="hud-item hud-item--boost">
+                            <span class="hud-label">BOOST</span>
+                            <div class="boost-bar-container">
+                                <div id="boost-bar" class="boost-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile Controls -->
+            <div id="mobile-controls" class="mobile-controls hidden">
+                <div class="dpad">
+                    <button class="dpad-btn" data-dir="up" aria-label="Up">↑</button>
+                    <div class="dpad-middle">
+                        <button class="dpad-btn" data-dir="left" aria-label="Left">←</button>
+                        <button class="dpad-btn boost-btn" data-dir="boost" aria-label="Boost">⚡</button>
+                        <button class="dpad-btn" data-dir="right" aria-label="Right">→</button>
+                    </div>
+                    <button class="dpad-btn" data-dir="down" aria-label="Down">↓</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Particle Canvas -->
+        <canvas id="particle-canvas" class="game-canvas"></canvas>
+    </div>
+    
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
